@@ -8,6 +8,11 @@ defmodule Cog do
     case args do
       [ token | [] ] ->
         start 0, token
+        receive do
+          something ->
+            IO.inspect something
+            main [token]
+        end
       [] -> IO.puts "Please start with a token"
       _ -> IO.puts "Invalid command line args #{args}"
     end
