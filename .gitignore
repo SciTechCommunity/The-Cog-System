@@ -18,3 +18,9 @@ erl_crash.dump
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+
+# The startup script for the system
+start
+
+# Key file for private APIs
+key

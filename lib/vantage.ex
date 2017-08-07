@@ -41,18 +41,18 @@ defmodule Cog.Vantage do
 end
 
 defmodule Vantage do
-  def start(data \\ %{}) do
+  def start(key, data \\ %{}) do
     Process.register self(), :brain
     send :brain, {:start, data}
-    listen
+    listen key
   end
 
-  def listen(data \\ %{}) do
+  def listen(key, data \\ %{}) do
     receive do
       {:start, init} ->
         data = init
       {:quote, sender, stock} ->
-        stock = stock |> poll
+        stock = stock |> poll(key)
         send sender, stock
       {:watch, sender, user, stock} ->
         {data, stock} = update_list data, user, stock
@@ -62,8 +62,8 @@ defmodule Vantage do
     listen data
   end
 
-  def poll(stock) do
-    case HTTPoison.get "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock}&apikey=MKV6H2T1IFHNBCKZ" do
+  def poll(stock, key) do
+    case HTTPoison.get "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock}&apikey=#{key}" do
       {:ok, response} ->
         case Poison.decode response.body do
           {:ok, json} -> 

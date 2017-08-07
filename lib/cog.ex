@@ -7,7 +7,8 @@ defmodule Cog do
   def main(args \\ []) do
     case args do
       [ token | [] ] ->
-        start 0, token
+        key = File.read! "key"
+        start token, [vantage: key]
         receive do
           something ->
             IO.inspect something
@@ -18,20 +19,22 @@ defmodule Cog do
     end
   end
 
-  def start(_,token) do
+  def start(token, keys) do
     Process.register self(), :cog_engine
     client = Alchemy.Client.start token
-    Alchemy.Cogs.set_prefix("<@338170415274917888> ") # @Cog
+    Alchemy.Cogs.set_prefix("<@338170415274917888> ") #@Cog
     use Cog.{Commands, Admin, Vantage, Menu, Resource}
-    spawn_monitor Vantage, :start, [%{}]
+    use Cog.{Experimental}
+    spawn_monitor Vantage, :start, [keys[:vantage], %{}]
+    spawn_monitor Subscriptions, :start, []
     Alchemy.Client.update_status "The Cog System"
     client
   end
 
-  def restart_workers do
+  def restart_workers(keys) do
     pid = Process.whereis :brain
     Process.exit pid, :kill
-    spawn_monitor Vantage, :start, [%{}]
+    spawn_monitor Vantage, :start, [keys.vantage, %{}]
   end
 
 end
