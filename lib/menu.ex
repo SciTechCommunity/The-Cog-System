@@ -5,6 +5,10 @@ defmodule Cog.Menu.Helpers do
       "<@&339118234441875457>" => ["<@249991058132434945>"], # @Admin
       "<@&339113373486809099>" => ["<@249991058132434945>"], # @VantagePoint
       "<@&339555180553175060>" => ["<@249991058132434945>"], # @Resource
+      "<@&341124551524220928>" => ["<@249991058132434945>"], # @Search
+      "<@&341124683715837953>" => ["<@249991058132434945>"], # @Experimental
+      "<@&345314788642914325>" => ["<@249991058132434945>"], # @Profiles
+      "<@&372604926125146112>" => ["<@249991058132434945>"], # @Roles
     }
   end
   def details do
@@ -13,6 +17,10 @@ defmodule Cog.Menu.Helpers do
       "<@&339118234441875457>" => "The <@&339118234441875457> Cog provides access to Moderator like commands such as mute and clear. These commands should only be used by Mods and Admins.", # @Admin
       "<@&339113373486809099>" => "The <@&339113373486809099> Cog is a WIP stock market simulator. Once completed it will allow users to manage virtual portfolios using a digital currency and data on openly traded companies.", # @VantagePoint
       "<@&339555180553175060>" => "The <@&339555180553175060> Cog is a WIP collection of free digital resources for the aspiring Computer Scientist!", # @Resource
+      "<@&341124551524220928>" => "No description available", # @Search
+      "<@&341124683715837953>" => "The <@&341124683715837953> Cog is a collection of experimental features not yet managed by a specific Cog. These features may be added or removed at any time", # @Experimental
+      "<@&345314788642914325>" => "No description available", # @Profiles
+      "<@&372604926125146112>" => "No description available", # @Roles
     }
   end
 end
@@ -24,7 +32,7 @@ defmodule Cog.Menu do
   alias Alchemy.{Client,Embed}
   import Cog.{Helpers,Menu.Helpers}
 
-  Cogs.group("<@&339205216068960259>") # @Menu
+  Cogs.group("@&339205216068960259>") # @Menu
 
   
 
@@ -43,6 +51,11 @@ defmodule Cog.Menu do
       |> <@&339113373486809099>
       |> <@&339118234441875457>
       |> <@&339555180553175060>
+      |> <@&341124551524220928>
+      |> <@&341124683715837953>
+      |> <@&345314788642914325>
+      |> <@&372604926125146112>
+
 
     **__Menu Commands:__**
       |> `about`
@@ -86,9 +99,11 @@ defmodule Cog.Menu do
     {:ok, this} = Cogs.say """
     loading help...
 
-    Commands in the Cog System have 3 parts: The base (@Cog), the Cog (@Menu), and the command (help).
+    Commands in the Cog System have 3 parts: The Cog (@Menu), the command (help), and an optional set of parameters.
 
-    Some commands will take additional parameters. These are marked as required `<param>`, optional `(param)`, or a choice between two `[param | param]`.
+    Some commands will take additional parameters while others, like help, will take none.
+    
+    These are marked as required `<param>`, optional `(param)`, or a choice between two `[param | param]`.
 
     Parameter followed by a `...` like `<params...>` indicate that it is possible to pass multiple parameters.
 

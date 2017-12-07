@@ -29,8 +29,10 @@ defmodule Cog.Resource.Helpers do
     """
     ***Free eBook each day at PacktPub!***
     Today's book is: **#{title}**.
+    
     You still have **#{time}** to pick it up @
     https://www.packtpub.com/packt/offers/free-learning
+
     You can **support the author** by purchasing this book @
     https://www.packtpub.com#{link}
     """
@@ -44,19 +46,20 @@ defmodule Cog.Resource.Helpers do
     send :subs, {:dump, self()}
     subs = receive do
       dump ->
-        IO.inspect dump
+        # IO.inspect dump
         data = for {sub, ids} <- dump do
           unless ids == [] do
-          Client.send_message "235823577813876736", """
+          {:ok, replace} = Client.send_message "235823577813876736", """
           #{load sub}
           #{for id <- ids, into: "", do: "<@#{id}>"}
           """, [tts: true]
+          close replace, 3600*6
           end
         end
-        IO.inspect data
+        # IO.inspect data
         dump
     end
-    Process.sleep 3600*12*1000
+    Process.sleep 3600*6*1000
     ping_subs
   end
 end
@@ -67,7 +70,7 @@ defmodule Cog.Resource do
   alias Alchemy.{Client,Embed}
   import Cog.{Helpers,Resource.Helpers}
 
-  Cogs.group("<@&339555180553175060>") # @Resource
+  Cogs.group("@&339555180553175060>") # @Resource
 
   Cogs.def packt do
     Cogs.say load :packt
@@ -82,6 +85,7 @@ defmodule Cog.Resource do
   end
   
   Cogs.def unsubscribe("packt") do
+    IO.inspect {:unsubscribed, message.author}
     id = String.to_integer message.author.id
     send :subs, {:unsubscribe, :packt, id}
     {:ok, alert} = Cogs.say "<@#{id}> You have unsubscribed to the daily packt ebook!"
@@ -89,7 +93,7 @@ defmodule Cog.Resource do
   end
 
   Cogs.def subscribe("packt") do
-    IO.inspect "here"
+    IO.inspect {:subscribed, message.author}
     id = String.to_integer message.author.id
     send :subs, {:subscribe, :packt, id}
     {:ok, alert} = Cogs.say "<@#{id}> You have subscribed to the daily packt ebook!"

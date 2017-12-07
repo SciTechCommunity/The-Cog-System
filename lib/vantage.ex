@@ -4,7 +4,7 @@ defmodule Cog.Vantage do
   alias Alchemy.{Client,Embed}
   import Cog.{Helpers}
 
-  Cogs.group("<@&339113373486809099>") # @VantagePoint
+  Cogs.group("@&339113373486809099>") # @VantagePoint
 
   # Cogs.set_parser(:test, &List.wrap/1)
   Cogs.def test(term) do

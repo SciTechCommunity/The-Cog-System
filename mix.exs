@@ -29,7 +29,7 @@ defmodule Cog.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:alchemy, "~> 0.5.0", hex: :discord_alchemy},
+    [{:alchemy, "~> 0.6.0", hex: :discord_alchemy},
     {:floki, "~> 0.17.2", hex: :floki}]
   end
 

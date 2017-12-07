@@ -1,3 +1,16 @@
+defmodule Cog.Helpers do
+  use Alchemy.Cogs
+  alias Alchemy.{Client}
+
+  def close(msg, sec) do
+    # You can't see this
+    Task.start fn -> 
+      Process.sleep sec*1000
+      Client.delete_message msg
+    end
+  end
+end
+
 defmodule Cog do
   @moduledoc """
   Documentation for Cog.
@@ -22,12 +35,14 @@ defmodule Cog do
   def start(token, keys) do
     Process.register self(), :cog_engine
     client = Alchemy.Client.start token
-    Alchemy.Cogs.set_prefix("<@338170415274917888> ") #@Cog
-    use Cog.{Commands, Admin, Vantage, Menu, Resource}
-    use Cog.{Experimental}
-    spawn_monitor Vantage, :start, [keys[:vantage], %{}]
-    spawn_monitor Subscriptions, :start, []
-    Alchemy.Client.update_status "The Cog System"
+    # Alchemy.Cogs.set_prefix("<@338170415274917888> ") #@Cog
+    Alchemy.Cogs.set_prefix("<")
+    use Cog.{Commands, Sudo, Vantage, Menu, Resource}
+    use Cog.{Profiles, Experimental, Roles}
+    use Cog.Events.{Welcome}
+    # spawn_monitor Vantage, :start, [keys[:vantage], %{}]
+    spawn_monitor Subscriptions, :start, [%{packt: [249991058132434945]}]
+    spawn_monitor Profiles, :start, []
     client
   end
 
@@ -35,6 +50,12 @@ defmodule Cog do
     pid = Process.whereis :brain
     Process.exit pid, :kill
     spawn_monitor Vantage, :start, [keys.vantage, %{}]
+  end
+
+
+  def test(token) do
+    spawn_monitor Cog, :main, [[token]]
+    :observer.start
   end
 
 end

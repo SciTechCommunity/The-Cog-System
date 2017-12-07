@@ -1,17 +1,3 @@
-defmodule Cog.Helpers do
-  use Alchemy.Cogs
-  alias Alchemy.{Client}
-
-  def close(msg, sec) do
-    # You can't see this
-    Task.start fn -> 
-      Process.sleep sec*1000
-      Client.delete_message msg
-    end
-  end
-end
-
-
 defmodule Cog.Commands.Helpers do
   def diff(time1, time2, unit \\ :milliseconds) do
     from = fn
@@ -31,6 +17,7 @@ defmodule Cog.Commands do
   alias Alchemy.{Client,Embed}
   import Cog.{Helpers,Commands.Helpers}
 
+  Cogs.group("@!338170415274917888>") # @Cog
 
   Cogs.def help do
     Cogs.say """
@@ -41,7 +28,8 @@ defmodule Cog.Commands do
   end
 
   Cogs.def commands do
-    Cogs.say "#{inspect Cogs.all_commands}"
+    # Cogs.say "#{inspect Cogs.all_commands}"
+    Cogs.say for key <- Cogs.all_commands |> Map.keys, into: "", do: key <> "\n"
   end
 
   Cogs.def usage do
