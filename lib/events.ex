@@ -1,7 +1,17 @@
 defmodule Cog.Events.Helpers do
+  use Alchemy.Cogs
   alias Alchemy.{Cache,Client}
   alias Alchemy.{User,Message}
   import Cog.{Helpers}
+
+
+    def confirm_role(message, role) do
+    {:ok, %Alchemy.Guild.GuildMember{roles: roles}} = Cogs.member
+    cond do
+      role in roles -> :ok
+      true -> :invalid_user
+    end
+  end
 
   def get_member(gid,mid) do
     case Cache.member gid, mid do
@@ -10,6 +20,18 @@ defmodule Cog.Events.Helpers do
         mem
     end
   end
+
+  def wait_for(message, fun) do
+    IO.puts "waiting1"
+    Cogs.wait_for :message, fun
+  end
+
+  def wait_for(message, condition, fun) do
+    # IO.puts "waiting2"
+    Cogs.wait_for :message, condition, fun
+  end
+
+
 end
 
 defmodule Cog.Events.Welcome do

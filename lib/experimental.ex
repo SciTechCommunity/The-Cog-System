@@ -217,3 +217,77 @@ defmodule Profiles do
     end |> listen
   end
 end
+
+defmodule Spam do
+  import Cog.{Helpers}
+
+
+  def start do
+    Process.register self(), :spam
+    listen
+  end
+
+  def listen(data \\ %{}) do
+    receive do
+      {resp, :level, id} ->
+        send resp, (Map.get data, id, 0)
+      {resp, :infraction, id} ->
+        data = Map.update data, id, 1, & &1 + 1
+        send resp, (Map.get id, data)
+      {resp, :clear, id}
+        data = Map.update data, id, 0, fn _ -> 0 end
+        send resp, :ok
+    end
+    listen data
+  end
+
+end
+
+defmodule Cog.Events.Spam do
+  use Alchemy.Events
+  alias Alchemy.{Cache,Client}
+  alias Alchemy.{User,Message}
+  import Cog.{Helpers,Events.Helpers}
+
+  @guild_id "232641658712358912"
+  @visitor "292739861767782401"
+  @welcome "317915118060961793"
+  @member "235927353832767498"
+
+  def from_iso8601(str) do
+    {:ok, dt, _} = DateTime.from_iso8601 str
+    dt
+  end
+
+  Events.on_message(:spam_filter)
+  def spam_filter(%Message{channel_id: cid, timestamp: time} = message) when cid != @welcome do
+    :invalid_user = confirm_role message, @member
+
+    t1 = time |> from_iso8601 |> DateTime.to_time
+
+    wait_for message,
+    fn msg -> (message.author == msg.author) && (message.channel_id == msg.channel_id) end,
+    fn msg ->
+      t2 = msg.timestamp |> from_iso8601 |> DateTime.to_time
+      # IO.inspect {t1, t2, Time.diff(t2,t1)}
+      if Time.diff(t2,t1) <= 1 do
+        spawn_monitor fn ->
+          send :spam, {self(), :infraction, String.to_integer msg.author.id}
+          receive do
+            i when i > 3 ->
+              IO.inspect i
+              if :ok == confirm_role msg, @visitor do
+                Client.remove_role @guild_id, msg.author.id, @visitor
+              end
+            # i -> IO.inspect i
+          end
+          spawn fn -> Process.send_after :spam, {self(), :clear, String.to_integer msg.author.id}, 5000 end
+        end
+      end
+        #  Client.delete_message msg
+      # time |> from_iso8601! |> DateTime.to_time |> Time.diff(t) |> IO.inspect
+      # IO.inspect Time.diff(Time.from_iso8601!(msg.timestamp), t)
+    end
+  end
+  
+end

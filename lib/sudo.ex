@@ -17,7 +17,8 @@ defmodule Cog.Sudo.Helpers do
 
   def induction(m) do
   """
-  Rejoice #{m}, for you have been accepted as an official member of CSST!
+  ***Rejoice #{m},***
+  You have been accepted as an **official member** of ***CSST***!
   Be sure to check out the new channels available in the member area!
   Thank you for joining us, we look forward to your contributions!
   """
@@ -41,6 +42,7 @@ defmodule Cog.Sudo do
       ["<" <> m, n] -> [Regex.run(~r{\d+}, m) |> hd, String.to_integer(n)]
       ["<" <> m] -> [Regex.run(~r{\d+}, m) |> hd, 10]
       [n] -> [String.to_integer(n)]
+      e -> IO.inspect e; [0]
     end
     message
   end)
@@ -68,12 +70,12 @@ defmodule Cog.Sudo do
 
   Cogs.def induct(m) do
     confirm message
-    close message, 0
+    close message, 5
     {:ok, old} = Cogs.say induction(m)
     {{:ok,id}, [m]} = {Cogs.guild_id, Regex.run(~r{\d+}, m)}
     Client.add_role id, m, @member
     Client.remove_role id, m, @visitor
-    close old, 30
+    close old, 360
   end
 
   Cogs.def anoint(m,r) do

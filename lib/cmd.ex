@@ -29,7 +29,7 @@ defmodule Cog.Commands do
 
   Cogs.def commands do
     # Cogs.say "#{inspect Cogs.all_commands}"
-    Cogs.say for key <- Cogs.all_commands |> Map.keys, into: "", do: key <> "\n"
+    Cogs.say for key <- Cogs.all_commands |> Map.keys, into: "", do: "<" <> key <> "\n"
   end
 
   Cogs.def usage do

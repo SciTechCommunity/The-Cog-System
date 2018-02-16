@@ -11,6 +11,8 @@ defmodule Cog.Helpers do
   end
 end
 
+defm
+
 defmodule Cog do
   @moduledoc """
   Documentation for Cog.
@@ -39,9 +41,10 @@ defmodule Cog do
     Alchemy.Cogs.set_prefix("<")
     use Cog.{Commands, Sudo, Vantage, Menu, Resource}
     use Cog.{Profiles, Experimental, Roles}
-    use Cog.Events.{Welcome}
+    use Cog.Events.{Welcome}#, Spam}
     # spawn_monitor Vantage, :start, [keys[:vantage], %{}]
     spawn_monitor Subscriptions, :start, [%{packt: [249991058132434945]}]
+    # spawn_monitor Spam, :start, []
     spawn_monitor Profiles, :start, []
     client
   end
@@ -51,6 +54,7 @@ defmodule Cog do
     Process.exit pid, :kill
     spawn_monitor Vantage, :start, [keys.vantage, %{}]
   end
+
 
 
   def test(token) do
